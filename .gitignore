@@ -1,2 +1,7 @@
-*/
-*.csv
+data_statistics
+fft_images
+ges_catalog
+test1.csv
+test2.csv
+test3.csv
+matched_files
