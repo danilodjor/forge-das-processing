@@ -7,15 +7,22 @@ from datetime import datetime
 import shutil
 import h5py
 from scipy.signal import resample_poly, resample
+import logging
 
 # Setup source and target folders
-source_dir = "/scratch/ddordevic/FORGE/downsample_test_source"
-target_dir = "/scratch/ddordevic/FORGE/downsample_test_target"
+source_dir = "/bedrettolab/E1B/DAS/2024_FORGE/DATA_RAW_fromOpenei/April_2024/v1.0.0"
+target_dir = "/bedrettolab/E1B/DAS/2024_FORGE/DATA_RAW_fromOpenei/April_2024/v1.0.0/downsampled"
+log_dir = "./downsample_logs"
+
 os.makedirs(target_dir, exist_ok=True)
+os.makedirs(log_dir, exist_ok=True)
+
+# Setup logging
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
 
 # Function definitions
-
-
 def timestamp2datetime(timestamp):
     return datetime.strptime(timestamp, "%Y%m%dT%H%M%S")
 
@@ -28,7 +35,7 @@ def process_files(source_dir, target_dir):
     # Sort the filenames according to the date
     files = [f for f in os.listdir(source_dir) if f.endswith(
         '.h5') and f.startswith('16B')]
-    files = sorted(files, key=lambda f: timestampFromFilename(f))
+    files = sorted(files, key=lambda f: timestamp2datetime(timestampFromFilename(f)))
 
     # Process first file
     file1_path = os.path.join(source_dir, files[0])
@@ -60,6 +67,8 @@ def process_files(source_dir, target_dir):
 
     f1.close()
     f2.close()
+
+    logging.info(f"Finished file 1/{len(files)} | {files[0]}")
 
     # Process triplets of consecutive files
     for i in range(1, len(files)-1):
@@ -102,6 +111,9 @@ def process_files(source_dir, target_dir):
 
         os.remove(file1_path)
 
+        logging.info(f"Finished file {i+1}/{len(files)} | {files[i]}")
+
+
     # Process last file
     file1_path = os.path.join(source_dir, files[-2])
     file2_path = os.path.join(source_dir, files[-1])
@@ -136,6 +148,10 @@ def process_files(source_dir, target_dir):
 
     os.remove(file1_path)
     os.remove(file2_path)
+
+    logging.info(f"Finished file {len(files)}/{len(files)} | {files[-1]}")
+    logging.info("Finished processing all files.")
+
 
 
 def main():
