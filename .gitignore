@@ -5,3 +5,4 @@ test1.csv
 test2.csv
 test3.csv
 matched_files
+*.h5
