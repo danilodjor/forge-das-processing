@@ -19,6 +19,7 @@ os.makedirs(log_dir, exist_ok=True)
 
 # Setup logging
 logging.basicConfig(filename="validation.log",
+                    filemode="w",
                     level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s',)
 
