@@ -10,17 +10,17 @@ from scipy.signal import resample_poly, resample
 import logging
 
 # Setup source and target folders
-source_dir = "/bedrettolab/E1B/DAS/2024_FORGE/DATA_RAW_fromOpenei/April_2024/v1.0.0"
-target_dir = "/bedrettolab/E1B/DAS/2024_FORGE/DATA_RAW_fromOpenei/April_2024/v1.0.0/downsampled"
+source_dir = "validation_data_source/" # "/bedrettolab/E1B/DAS/2024_FORGE/DATA_RAW_fromOpenei/April_2024/v1.0.0"
+target_dir = "validation_data_traget/" # "/bedrettolab/E1B/DAS/2024_FORGE/DATA_RAW_fromOpenei/April_2024/v1.0.0/downsampled"
 log_dir = "./downsample_logs"
 
 os.makedirs(target_dir, exist_ok=True)
 os.makedirs(log_dir, exist_ok=True)
 
 # Setup logging
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
+logging.basicConfig(filename="validation.log",
+                    level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s',)
 
 # Function definitions
 def timestamp2datetime(timestamp):
@@ -36,6 +36,8 @@ def process_files(source_dir, target_dir):
     files = [f for f in os.listdir(source_dir) if f.endswith(
         '.h5') and f.startswith('16B')]
     files = sorted(files, key=lambda f: timestamp2datetime(timestampFromFilename(f)))
+
+    logging.info(f"Starting downsampling of {len(files)} files...")
 
     # Process first file
     file1_path = os.path.join(source_dir, files[0])
@@ -72,7 +74,7 @@ def process_files(source_dir, target_dir):
 
     # Process triplets of consecutive files
     for i in range(1, len(files)-1):
-        print(f'Processing file {i}/{len(files)}...')
+        # print(f'Processing file {i}/{len(files)}...')
 
         file1_path = os.path.join(source_dir, files[i-1])
         file2_path = os.path.join(source_dir, files[i])  # main file to process
@@ -155,7 +157,7 @@ def process_files(source_dir, target_dir):
 
 
 def main():
-    print(f'Downsampling files from {source_dir} to {target_dir}...')
+    # print(f'Downsampling files from {source_dir} to {target_dir}...')
     process_files(source_dir, target_dir)
 
 
