@@ -18,7 +18,7 @@ os.makedirs(target_dir, exist_ok=True)
 os.makedirs(log_dir, exist_ok=True)
 
 # Setup logging
-logging.basicConfig(filename="validation.log",
+logging.basicConfig(filename=os.path.join(log_dir, "validation.log"),
                     filemode="w",
                     level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s',)
@@ -34,7 +34,8 @@ def timestampFromFilename(filename):
 
 def process_files(source_dir, target_dir):
     # Sort the filenames according to the date
-    files = [f for f in os.listdir(source_dir) if f.endswith('.h5') and f.startswith('16B')]
+    files = [f for f in os.listdir(source_dir) if f.endswith(
+        '.h5') and f.startswith('16B')]
     files = sorted(files, key=lambda f: timestamp2datetime(timestampFromFilename(f)))
 
     logging.info(f"Starting downsampling of {len(files)} files...")
@@ -90,8 +91,10 @@ def process_files(source_dir, target_dir):
 
         datasets_data = np.concatenate([dataset1, dataset2, dataset3], axis=0)
         # resample_poly(datasets_data, up=1, down=2, axis=0)
-        data_downsampled = resample(datasets_data, num=datasets_data.shape[0]//2, axis=0)
-        data_downsampled = data_downsampled[dataset1.shape[0] // 2:dataset1.shape[0]//2+dataset2.shape[0]//2]
+        data_downsampled = resample(
+            datasets_data, num=datasets_data.shape[0]//2, axis=0)
+        data_downsampled = data_downsampled[dataset1.shape[0] //
+                                            2:dataset1.shape[0]//2+dataset2.shape[0]//2]
 
         assert data_downsampled.shape[0] == dataset2.shape[0]//2 and data_downsampled.shape[1] == dataset2.shape[1]
 
