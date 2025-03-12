@@ -34,8 +34,7 @@ def timestampFromFilename(filename):
 
 def process_files(source_dir, target_dir):
     # Sort the filenames according to the date
-    files = [f for f in os.listdir(source_dir) if f.endswith(
-        '.h5') and f.startswith('16B')]
+    files = [f for f in os.listdir(source_dir) if f.endswith('.h5') and f.startswith('16B')]
     files = sorted(files, key=lambda f: timestamp2datetime(timestampFromFilename(f)))
 
     logging.info(f"Starting downsampling of {len(files)} files...")
@@ -55,8 +54,7 @@ def process_files(source_dir, target_dir):
 
     datasets_data = np.concatenate([dataset1, dataset2], axis=0)
     # resample_poly(datasets_data, up=1, down=2, axis=0)
-    data_downsampled = resample(
-        datasets_data, num=datasets_data.shape[0]//2, axis=0)
+    data_downsampled = resample(datasets_data, num=datasets_data.shape[0]//2, axis=0)
     data_downsampled = data_downsampled[:dataset1.shape[0]//2]
 
     assert data_downsampled.shape[0] == dataset1.shape[0]//2 and data_downsampled.shape[1] == dataset1.shape[1]
@@ -75,8 +73,6 @@ def process_files(source_dir, target_dir):
 
     # Process triplets of consecutive files
     for i in range(1, len(files)-1):
-        # print(f'Processing file {i}/{len(files)}...')
-
         file1_path = os.path.join(source_dir, files[i-1])
         file2_path = os.path.join(source_dir, files[i])  # main file to process
         file3_path = os.path.join(source_dir, files[i+1])
@@ -94,10 +90,8 @@ def process_files(source_dir, target_dir):
 
         datasets_data = np.concatenate([dataset1, dataset2, dataset3], axis=0)
         # resample_poly(datasets_data, up=1, down=2, axis=0)
-        data_downsampled = resample(
-            datasets_data, num=datasets_data.shape[0]//2, axis=0)
-        data_downsampled = data_downsampled[dataset1.shape[0] //
-                                            2:dataset1.shape[0]//2+dataset2.shape[0]//2]
+        data_downsampled = resample(datasets_data, num=datasets_data.shape[0]//2, axis=0)
+        data_downsampled = data_downsampled[dataset1.shape[0] // 2:dataset1.shape[0]//2+dataset2.shape[0]//2]
 
         assert data_downsampled.shape[0] == dataset2.shape[0]//2 and data_downsampled.shape[1] == dataset2.shape[1]
 
@@ -158,7 +152,6 @@ def process_files(source_dir, target_dir):
 
 
 def main():
-    # print(f'Downsampling files from {source_dir} to {target_dir}...')
     process_files(source_dir, target_dir)
 
 
