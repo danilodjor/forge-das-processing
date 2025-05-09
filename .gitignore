@@ -10,3 +10,4 @@ downsample_forge.txt
 *.log
 downsample.txt
 *.pkl
+output*

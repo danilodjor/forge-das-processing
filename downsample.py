@@ -49,7 +49,7 @@ def process_files(source_dir, target_dir, start_idx, end_idx, up, down, filename
     file2_path = os.path.join(source_dir, files[1])
 
     file1_path_new = os.path.join(target_dir, files[0])
-    shutil.copy2(file1_path, file1_path_new)
+    shutil.copyfile(file1_path, file1_path_new)
 
     with h5py.File(file1_path_new, 'r+') as f1, \
          h5py.File(file2_path, 'r') as f2:
@@ -75,7 +75,7 @@ def process_files(source_dir, target_dir, start_idx, end_idx, up, down, filename
         dataset1.attrs.modify('InterrogationRate(Hz)',
                             dataset1.attrs['InterrogationRate(Hz)']*resample_ratio)
 
-    logging.info(f"Finished file 1/{len(files)} | {files[0]}")
+    logging.info(f"Finished file {start_idx}/{len(files)} | {files[0]}")
 
     # Process triplets of consecutive files
     for i in range(1, len(files)-1):
@@ -86,7 +86,7 @@ def process_files(source_dir, target_dir, start_idx, end_idx, up, down, filename
         file3_path = os.path.join(source_dir, files[i+1])
 
         file2_path_new = os.path.join(target_dir, files[i])
-        shutil.copy2(file2_path, file2_path_new)
+        shutil.copyfile(file2_path, file2_path_new)
 
         with h5py.File(file1_path, 'r') as f1, \
              h5py.File(file2_path_new, 'r+') as f2, \
@@ -118,7 +118,7 @@ def process_files(source_dir, target_dir, start_idx, end_idx, up, down, filename
 
         os.remove(file1_path)
 
-        logging.info(f"Finished file {i+1}/{len(files)} | {files[i]} | Time elapsed: {time.time() - start_time:.2f} s")
+        logging.info(f"Finished file {i+start_idx}/{len(files)} | {files[i]} | Time elapsed: {time.time() - start_time:.2f} s")
 
 
     # Process last file
@@ -126,7 +126,7 @@ def process_files(source_dir, target_dir, start_idx, end_idx, up, down, filename
     file2_path = os.path.join(source_dir, files[-1])
 
     file2_path_new = os.path.join(target_dir, files[-1])
-    shutil.copy2(file2_path, file2_path_new)
+    shutil.copyfile(file2_path, file2_path_new)
 
     with h5py.File(file1_path, 'r') as f1, \
          h5py.File(file2_path_new, 'r+') as f2:
@@ -156,7 +156,7 @@ def process_files(source_dir, target_dir, start_idx, end_idx, up, down, filename
     os.remove(file1_path)
     os.remove(file2_path)
 
-    logging.info(f"Finished file {len(files)}/{len(files)} | {files[-1]}")
+    logging.info(f"Finished file {end_idx}/{len(files)} | {files[-1]}")
 
 
 def main():
@@ -171,6 +171,13 @@ def main():
     parser.add_argument('--down', type=int, default=5, help='Downsampling factor')
 
     args = parser.parse_args()
+
+    # Setup logging
+    date_stamp = datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
+    logging.basicConfig(filename=os.path.join(args.log_dir, f"validation_{date_stamp}.log"),
+                        filemode="w",
+                        level=logging.INFO,
+                        format='%(asctime)s - %(levelname)s - %(message)s',)
 
     for arg, value in vars(args).items():
         logging.info(f'{arg} = {value}')
@@ -188,13 +195,7 @@ def main():
     os.makedirs(target_dir, exist_ok=True)
     os.makedirs(log_dir, exist_ok=True)
 
-    # Setup logging
-    date_stamp = datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
-    logging.basicConfig(filename=os.path.join(log_dir, f"validation_{date_stamp}.log"),
-                        filemode="w",
-                        level=logging.INFO,
-                        format='%(asctime)s - %(levelname)s - %(message)s',)
-
+    # Main processing
     process_files(source_dir, target_dir, start_idx, end_idx, up, down, filenames)
 
     logging.info("Finished processing all files.")

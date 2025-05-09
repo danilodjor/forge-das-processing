@@ -1,11 +1,11 @@
 #!/bin/bash
 
-conda run -n dascore python downsample.py --source_dir /scratch/ddordevic/FORGE/validation_data_source \
-                                          --target_dir /scratch/ddordevic/FORGE/validation_data_target \
+conda run -n dascore python downsample.py --source_dir /lab_downsize/v1.0.0 \
+                                          --target_dir /lab_downsize/v2.0.0 \
                                           --log_dir /scratch/ddordevic/FORGE/downsample_logs \
-                                          --start_idx 49732 \
-                                          --end_idx 74597 \
-                                          --filenames /scratch/ddordevic/FORGE/validation_data_source/filenames.pkl \
+                                          --start_idx 73672 \
+                                          --end_idx 89515 \
+                                          --filenames /scratch/ddordevic/FORGE/validation_data_source/filenames_FORGE.pkl \
                                           --up 2 \
                                           --down 5 \
 
