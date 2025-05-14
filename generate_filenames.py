@@ -1,13 +1,7 @@
 import os
 import pickle
 from datetime import datetime
-
-
-def timestamp2datetime(timestamp):
-    return datetime.strptime(timestamp, "%Y%m%dT%H%M%S")
-
-def timestampFromFilename(filename):
-    return filename.split("StrainRate_")[1].split("+")[0]
+from utils import timestamp2datetime, timestampFromFilename
 
 
 source_dir = "/lab_downsize/v1.0.0"

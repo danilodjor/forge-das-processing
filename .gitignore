@@ -11,3 +11,4 @@ downsample_forge.txt
 downsample.txt
 *.pkl
 output*
+*test.*
