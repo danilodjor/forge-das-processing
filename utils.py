@@ -37,7 +37,7 @@ def bisect_right_key(a, x, key=lambda v: v):
             hi = mid
     return lo
 
-def binary_search_first_extreme(a: List[str], x: datetime.timestamp, key=lambda v: v, mode='smaller'):
+def binary_search_first_extreme(a: List[str], x: datetime, key=lambda v: v, mode='smaller'):
     """
     Returns the index of the first value smaller or larger than x in a sorted array.
     mode: 'smaller' or 'larger'
