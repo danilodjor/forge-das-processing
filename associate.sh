@@ -7,7 +7,7 @@
 
 # Load necessary modules (if required by your environment)
 source /scratch/ddordevic/miniconda3/etc/profile.d/conda.sh
-conda activate myenv
+conda activate dascore
 
 # Define paths (update these before running)
 csv_path="/scratch/ddordevic/FORGE/FORGE16BApril24NetworkBackgroundB.csv"
