@@ -75,10 +75,20 @@ def binary_search_first_extreme(a: List[str], x: datetime, key=lambda v: v, mode
                 lo = mid + 1
     return result
 
+
 def slice_das_segment(start_time, end_time, source_dir):
+    """
+    Returns a DAS segment containing the recordings within the specified time range.
+    It may cut and/or concatenate multiple patches, based on the time range.
+    """
     # Get the list of files in the source directory
-    files = [f for f in os.listdir(source_dir) if f.endswith('.h5') and f.startswith('16B')]
-    files = sorted(files, key=lambda f: timestamp2datetime(timestampFromFilename(f))) # sorted(files, key=lambda f: int(f.split('_')[-1].split('.')[0]))
+    files = [
+        f for f in os.listdir(source_dir)
+        if f.endswith('.h5') and f.startswith('16B')
+    ]
+    files = sorted(
+        files, key=lambda f: timestamp2datetime(timestampFromFilename(f))
+    )  # sorted(files, key=lambda f: int(f.split('_')[-1].split('.')[0]))
 
     # Convert start_time and end_time to datetime objects
     start_time = timestamp2datetime(start_time)
@@ -86,19 +96,21 @@ def slice_das_segment(start_time, end_time, source_dir):
 
     # Find the index of the first file that is greater than or equal to start_time and less than or equal to end_time
     start_idx = binary_search_first_extreme(
-                            files,
-                            start_time,
-                            key=lambda f: timestamp2datetime(timestampFromFilename(f)),
-                            mode='smaller')
-    
+        files,
+        start_time,
+        key=lambda f: timestamp2datetime(timestampFromFilename(f)),
+        mode='smaller')
+
     end_idx = binary_search_first_extreme(
-                            files,
-                            end_time,
-                            key=lambda f: timestamp2datetime(timestampFromFilename(f)),
-                            mode='larger')
-    
+        files,
+        end_time,
+        key=lambda f: timestamp2datetime(timestampFromFilename(f)),
+        mode='larger')
+
     # Create a list of file paths for the files that fall within the specified time range
-    file_paths = [os.path.join(source_dir, f) for f in files[start_idx:end_idx + 1]]
+    file_paths = [
+        os.path.join(source_dir, f) for f in files[start_idx:end_idx + 1]
+    ]
 
     # Create a DAS segment from the file paths
     patches = [dc.spool(file_path)[0] for file_path in file_paths]
@@ -112,4 +124,3 @@ def slice_das_segment(start_time, end_time, source_dir):
 
     # Return the concatenated DAS segment
     return patches
-

@@ -12,3 +12,5 @@ downsample.txt
 *.pkl
 output*
 *test.*
+.vscode
+__pychache__
