@@ -1,6 +1,18 @@
 import pandas as pd
 import sys
 
+"""
+CSV Similarity Checker
+
+This script compares two CSV files to determine if they are identical in content.
+
+Usage from command line:
+    python check_similarity.py <file1.csv> <file2.csv>
+
+Author: Danilo Dordevic
+Last Updated: August 2025
+"""
+
 def compare_csv_files(file1, file2):
     try:
         # Read both CSV files into DataFrames

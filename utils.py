@@ -1,3 +1,39 @@
+"""
+FORGE DAS Data Processing Utilities
+
+This module provides utility functions for processing and analyzing Distributed Acoustic Sensing (DAS)
+data from the Utah FORGE geothermal field. It includes tools for temporal data slicing, file management,
+and efficient binary search operations on time-sorted datasets.
+
+Key Functionality:
+    - Timestamp parsing and filename manipulation for FORGE DAS files
+    - Binary search algorithms with custom key functions for sorted arrays
+    - DAS data segment extraction across multiple HDF5 files
+    - Temporal concatenation and slicing of DAS recordings
+
+File Naming Convention:
+    DAS files follow the pattern: "16B_StrainRate_YYYYMMDDTHHMMSS+0000_NNNNN.h5"
+    where YYYYMMDDTHHMMSS represents the UTC timestamp.
+
+Dependencies:
+    - dascore: For DAS data manipulation and processing
+    - datetime: For timestamp parsing and manipulation
+    - os: For file system operations
+
+Usage Example:
+    from utils import slice_das_segment
+    
+    # Extract 60-second DAS segment
+    segment = slice_das_segment(
+        start_time="20240408T154300",
+        end_time="20240408T154400", 
+        source_dir="/path/to/das/files"
+    )
+
+Author: Danilo Dordevic
+Last Updated: August 2025
+"""
+
 import os
 import dascore as dc
 from datetime import datetime

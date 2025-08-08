@@ -14,3 +14,4 @@ output*
 *test.*
 .vscode
 __pychache__
+*.png
