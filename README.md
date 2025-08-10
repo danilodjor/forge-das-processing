@@ -314,7 +314,7 @@ All processing operations generate comprehensive logs including:
 
 This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
 
-**Note**: This license applies to the software code and tools in this repository. The FORGE dataset itself may be subject to separate data usage agreements and institutional policies. Please refer to the [FORGE Data Portal](https://gdr.openei.org/submissions/1375) for data-specific licensing terms.
+**Note**: This license applies to the software code and tools in this repository. The FORGE dataset itself may be subject to separate data usage agreements and institutional policies. Please refer to the [FORGE Data Portal](https://gdr.openei.org/submissions/1680) for data-specific licensing terms.
 
 ## 🔗 Related Resources
 
