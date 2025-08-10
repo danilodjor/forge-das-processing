@@ -8,7 +8,7 @@ This repository contains tools and analyses for processing DAS (Distributed Acou
 
 ### Key Features
 
-- **Intelligent Downsampling**: Temporal downsampling with configurable ratios using scipy's polyphase filtering
+- **Efficient Downsampling**: Temporal downsampling with configurable ratios using scipy's polyphase filtering
 - **Data Association**: Match seismic catalog events with corresponding DAS recordings
 - **Visualization Tools**: Comprehensive plotting and spectral analysis capabilities
 - **Channel Interpolation**: Spatial interpolation methods for DAS channel positioning
@@ -20,24 +20,38 @@ This repository contains tools and analyses for processing DAS (Distributed Acou
 ```
 forge-downsampling/
 ├── README.md                              # Project documentation
-├── downsample.py                          # Main downsampling script
-├── utils.py                              # Utility functions
-├── associate_catalog_dataset.py          # Event-data association
-├── generate_filenames.py                 # File management utilities
-├── check_similarity.py                   # Data validation tools
-├── visualization.ipynb                   # Data visualization notebook
-├── spectral_analysis.ipynb               # Frequency domain analysis
-├── data_statistics.ipynb                 # Statistical analysis
-├── plot_events.ipynb                     # Event visualization
-├── inspect_csv.ipynb                     # CSV data inspection
-├── channel_interpolation/                 # Channel positioning tools
-│   ├── channel_interpolation.ipynb       # Spatial interpolation methods
-│   ├── *.csv                             # Position data files
-│   └── 16B(78)-32 Well Survey/           # Well survey data
-├── GES16Aand16BStimulationMonitoringApril2024/ # Field campaign data
-├── figures/                           # Analysis results and plots
-├── downsample*.sh                        # Batch processing scripts
-└── associate.sh                         # Association processing script
+├── LICENSE                                # License
+├── requirements.txt                       # Python dependencies
+├── utils.py                               # Utility functions
+├── generate_filenames.py                  # Generate list of filenames to be downsampled
+├── demos.ipynb                            # Usage demonstrations
+├── inspect_csv.ipynb                      # Usage demonstrations
+├── association/                           # Event-data association tools
+│   ├── associate_catalog_dataset.py       # Main association script
+│   ├── associate.sh                       # SLURM batch script
+│   └── check_similarity.py                # Data validation utilities
+├── channel_interpolation/                 # Spatial interpolation tools
+│   ├── channel_interpolation.ipynb        # Interpolation methods & analysis
+│   ├── README.md                          # Detailed documentation
+│   ├── *.csv                              # Position data files
+│   ├── 16B(78)-32 Well Survey/            # Well survey data
+│   ├── anchors/                           # Reference positioning data
+│   └── federica/                          # Additional survey data
+├── downsample/                            # Temporal downsampling tools
+│   ├── downsample.py                      # Main downsampling script
+│   ├── downsample.ipynb                   # Analysis notebook
+│   └── downsample*.sh                     # Batch processing scripts
+├── visualization/                         # Data visualization & analysis
+│   ├── visualization.ipynb                # Basic DAS data visualization
+│   ├── spectral_analysis.ipynb            # Frequency domain analysis
+│   ├── plot_events.ipynb                  # Event-specific visualizations
+│   └── data_statistics.ipynb              # Statistical analysis
+├── figures/                               # Analysis results and plots
+│   └── 3D_plots/                          # 3D event visualizations
+├── data_statistics/                       # Statistical analysis outputs
+└── GES16Aand16BStimulationMonitoringApril2024/ # Field campaign data
+    ├── 16AStimulationCatalogues/          # 16A well seismic catalogs
+    └── 16BStimulationCatalogues/          # 16B well seismic catalogs
 ```
 
 ## 🔧 Installation & Setup
@@ -45,7 +59,6 @@ forge-downsampling/
 ### Prerequisites
 
 - Python 3.8+
-- Conda environment management
 - Required packages:
   - `numpy`
   - `scipy`
@@ -69,13 +82,22 @@ pip install -r requirements.txt
 ```
 
 ## 🚀 Usage
+This section outlines how to use the repository according to its structure.
+The workflow is organized into four main stages, executed in order: association, visualization, downsampling, and channel_interpolation. Each stage generates outputs that serve as inputs for the next.
 
-### 1. Data Downsampling
+These four sections contain the core functions and scripts described below.
+In addition, the root directory includes utility helper functions, demonstration notebooks, and basic files for validation and inspection.
 
-The main downsampling functionality is provided by `downsample.py`, which performs temporal downsampling with anti-aliasing:
+### 1. Data Downsampling (`downsample/`)
+
+- **`downsample.ipynb`**: Downsampling method comparison and validation
+- **`downsample*.sh`**: Scripts for automated batch submissions.
+
+#### Main Functionalities
+The main downsampling functionality is provided by `downsample/downsample.py`, which performs temporal downsampling with anti-aliasing:
 
 ```bash
-python downsample.py \
+python downsample/downsample.py \
     --source_dir /path/to/source/data \
     --target_dir /path/to/output/data \
     --log_dir /path/to/logs \
@@ -96,14 +118,17 @@ python downsample.py \
 - `--down`: Downsampling factor (default: 5)
 - `--filenames`: Path to pickle file containing sorted filenames
 
-Note: The resample_poly function from scipy.signal performs resampling of a N-dimensional signal by applying an anti-aliasing FIR filter followed by upsampling and downsampling. It takes two key arguments: *upsample_factor* and *downsample_factor*, which define the resampling ratio. The signal is first upsampled by inserting (upsample_factor - 1) zeros between samples, filtered to remove aliasing, and then downsampled by keeping every downsample_factor-th sample. For example, resample_poly(signal, up=1, down=4) reduces the sampling rate by a factor of 4, while resample_poly(signal, up=4, down=1) increases it by 4.
+_Note_: The resample_poly function from scipy.signal performs resampling of a N-dimensional signal by applying an anti-aliasing FIR filter followed by upsampling and downsampling. It takes two key arguments: *upsample_factor* and *downsample_factor*, which define the resampling ratio. The signal is first upsampled by inserting (upsample_factor - 1) zeros between samples, filtered to remove aliasing, and then downsampled by keeping every downsample_factor-th sample. For example, resample_poly(signal, up=1, down=4) reduces the sampling rate by a factor of 4, while resample_poly(signal, up=4, down=1) increases it by 4.
 
-### 2. Batch Processing
+_Note_: Before using this function for the first time, run `generate_filenames.py` to create a file containing the list of filenames and their paths to process. Then, pass the path to this file as the --filenames command-line argument when running downsample.py.
+
+#### Batch Processing
 
 Use the provided shell scripts for large-scale processing:
 
 ```bash
 # Process different data segments in parallel
+cd downsample/
 ./downsample1.sh  # Process files 14075-29838
 ./downsample2.sh  # Process files 43705-59677
 ./downsample3.sh  # Process files 73672-89515
@@ -117,25 +142,40 @@ The scripts were used on the Bigstar cluster in parallel, and were ran by the fo
 nohup ./downsample1.sh > output_info1.txt 2>&1 &
 ```
 
-### 3. Event-Data Association
+### 2. Association of Catalog Events with Recordings (`association/`)
 
 Associate seismic catalog events with DAS recordings:
 
 ```bash
-python associate_catalog_dataset.py
+python association/associate_catalog_dataset.py
 ```
 
-This script matches temporal windows between seismic catalogs and DAS data files based on event trigger times. For each even in the catalog, it finds the corresponding h5 file, which contains the recording of the event, and a given 12 second time window around it. The output of this script is the path to the h5 file that contains the window, which includes the recordings of the events from the catalog. It appends a new column, titled "MatchedFIle", to the catalog .csv tables. This can be seen by inspecting the catalogs from the folder GES16Aand16BStimulationMonitoringApril2024.
+This script matches temporal windows between seismic catalogs and DAS data files based on event trigger times. For each event in the catalog, it finds the corresponding h5 file, which contains the recording of the event, and a given 12 second time window around it. The output of this script is the path to the h5 file that contains the window, which includes the recordings of the events from the catalog. It appends a new column, titled "MatchedFile", to the catalog .csv tables.
 
-### 4. Data Analysis and Visualization
+The script `check_similarity.py` is a utility script to be used for validation, to ensure that two csv files are exactly the same.
+
+### 3. Data Analysis and Visualization (`visualization/`)
 
 Interactive Jupyter notebooks are provided for various analyses:
 
-- **`visualization.ipynb`**: Basic data visualization and waterfall plots
-- **`spectral_analysis.ipynb`**: Frequency domain analysis and FFT. Used to determine the adequate frequency for downsample the FORGE dataset to. It was chosen to be 4 kHz.
-- **`data_statistics.ipynb`**: Statistical analysis of DAS data. Used as part of the exploratory data analysis step.
-- **`plot_events.ipynb`**: Event-specific visualizations. Used as part of the exploratory data analysis step.
-- **`channel_interpolation.ipynb`**: Spatial interpolation methods for the FORGE DAS cable. This notebook explores spatial interpolation methods to estimate arrival times across the FORGE DAS cable. The goal is to backproject known event arrival times onto each DAS channel using their 3D locations specified as (EASTING, NORTHING, DEPTH). By assuming a planar wavefront or using known event locations, the notebook computes expected arrival times at each channel, effectively creating a dense set of pseudo-labels. These interpolated arrival times can then be used as ground truth for training phase-picking models, which is especially useful given the large number of DAS channels and the difficulty of manual labeling at scale.
+- **`visualization.ipynb`**: Basic data visualization and waterfall plots of DAS recordings
+- **`spectral_analysis.ipynb`**: Frequency domain analysis, FFT and F-K analysis. Used to determine the adequate frequency for downsample the FORGE dataset to. It was chosen to be 4 kHz
+- **`plot_events.ipynb`**: Event-specific visualizations. Plots events in 3D space. Used as part of the exploratory data analysis step
+- **`data_statistics.ipynb`**: Statistical analysis of DAS data. Used as part of the exploratory data analysis step
+
+### 4. Spatial Interpolation (`channel_interpolation/`)
+
+- **`channel_interpolation.ipynb`**: Spatial interpolation methods for the FORGE DAS cable. This notebook explores spatial interpolation methods for reconstructing the exact locations of FORGE DAS cable channels, as well as estimates arrival times across the cable. The goal is to backproject known event origin times onto each DAS channel using their 3D locations specified as (EASTING, NORTHING, DEPTH). By assuming a planar wavefront or using known event locations, the notebook computes expected arrival times at each channel, effectively creating a dense set of pseudo-labels. These estimated arrival times can then be used as ground truth for training phase-picking models, which is especially useful given the large number of DAS channels and the difficulty of manual labeling at scale.
+
+### 5. Statistical Analysis (root directory)
+
+- **`demos.ipynb`**: Usage demonstrations for core functionality
+- **`generate_filenames.py`**: Script to create a file listing dataset filenames and their paths for batch processing. Necessary to run before downsampling
+- **`inspect_csv.ipynb`**: Notebook for exploring, validating, and summarizing CSV data files. Used as part of exploratory data analysis step
+
+### 6. Utilities (root directory)
+- **`utils.py`**: Collection of helper functions supporting data processing and analysis tasks, used by other scripts
+
 
 ## 📊 Data Format
 
@@ -197,8 +237,8 @@ The full path to the downsampled FORGE April 2024 data is: `/bedrettolab/E1B/DAS
 
 - Spatial interpolation of channel positions
 - Well trajectory integration
-- Arc-length parameterization
 - Cubic spline interpolation
+- Arrival time estimation for each channel of the DAS cable
 
 ## 🗂️ Data Sources
 
@@ -217,11 +257,38 @@ The full path to the downsampled FORGE April 2024 data is: `/bedrettolab/E1B/DAS
 - Stimulation treatment records
 - Multi-instrument coordination data
 
+## 🏗️ Modular Architecture
+
+The project follows a modular architecture with specialized folders for different functionality:
+
+### **Core Modules**
+
+- **`association/`**: Complete workflow for matching seismic catalog events with DAS recordings
+- **`channel_interpolation/`**: Spatial analysis and interpolation methods for DAS channel positioning, as well as arrival time computation
+- **`downsample/`**: Temporal downsampling tools with anti-aliasing and batch processing capabilities
+- **`visualization/`**: Data exploration, visualization, and spectral analysis notebooks
+
+### **Integration Points**
+
+- **Cross-module compatibility**: All modules work with the same HDF5 data format
+- **Shared utilities**: Common functions in `utils.py` used across modules
+- **Consistent data paths**: Standardized directory structure and file naming conventions
+- **Documentation**: Each module includes detailed README files and inline documentation
+
+### **Workflow Integration**
+
+1. **Data Preparation**: Use `association/` to match events with DAS files
+2. **Quality Assessment**: Use `visualization/` notebooks for initial data exploration
+3. **Filename generation**: Use `generate_filenames.py` to generate a list of filenames to be downsampled.
+4. **Processing**: Use `downsample/` for efficient temporal downsampling
+5. **Spatial Analysis**: Use `channel_interpolation/` for positioning and arrival time analysis
+6. **Validation**: Use quality control tools in `./` to verify results
+
 ## 🔍 Validation and Quality Control
 
 ### Validation Tools
 
-- **`check_similarity.py`**: Compare processed vs. original data
+- **`association/check_similarity.py`**: Compare processed vs. original data
 - **Statistical validation**: Distribution and spectral comparisons
 - **Metadata verification**: Ensure attribute consistency
 - **File integrity checks**: Validate HDF5 structure
@@ -245,27 +312,7 @@ All processing operations generate comprehensive logs including:
 
 ## 📄 License
 
-MIT License
-
-Copyright (c) 2025 FORGE DAS Downsampling Project
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
 
 **Note**: This license applies to the software code and tools in this repository. The FORGE dataset itself may be subject to separate data usage agreements and institutional policies. Please refer to the [FORGE Data Portal](https://gdr.openei.org/submissions/1375) for data-specific licensing terms.
 
