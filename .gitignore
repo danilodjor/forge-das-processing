@@ -14,5 +14,5 @@ output*
 *test.*
 .vscode
 __pychache__
-*.png
+*.png / figures/*
 .DS_STORE
