@@ -35,7 +35,7 @@ forge-downsampling/
 │   ├── *.csv                             # Position data files
 │   └── 16B(78)-32 Well Survey/           # Well survey data
 ├── GES16Aand16BStimulationMonitoringApril2024/ # Field campaign data
-├── meeting122/                           # Analysis results and plots
+├── figures/                           # Analysis results and plots
 ├── downsample*.sh                        # Batch processing scripts
 └── associate.sh                         # Association processing script
 ```
