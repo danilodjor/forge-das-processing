@@ -15,6 +15,6 @@ folder_path="/bedrettolab/E1B/DAS/2024_FORGE/DATA_RAW_fromOpenei/April_2024/v1.0
 output_csv="matching_catalog_files_B.csv"
 
 # Run the Python script
-python your_script.py "$csv_path" "$folder_path" "$output_csv"
+python associate_catalog_dataset.py "$csv_path" "$folder_path" "$output_csv"
 
 echo "Job completed successfully. Output saved to $output_csv"
