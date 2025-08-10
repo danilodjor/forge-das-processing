@@ -1,4 +1,4 @@
-# FORGE DAS Data Downsampling Project
+# FORGE DAS Downsampling & Analysis Toolkit
 
 A comprehensive toolkit for processing, analyzing, and downsampling Distributed Acoustic Sensing (DAS) data from the Utah FORGE geothermal field. This project provides efficient methods for handling large-scale seismic datasets and performing temporal downsampling with anti-aliasing filtering.
 
