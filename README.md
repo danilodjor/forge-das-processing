@@ -69,8 +69,20 @@ forge-downsampling/
   - `tqdm`
 
 ### Environment Setup
+You can set up the environment using either **Conda** or **Python virtual environments** (`venv`).
 
-```bash
+#### Using Conda (recommended for exact reproducibility)
+```
+# Create the environment from environment.yml
+conda env create -f environment.yml
+
+# Activate the environment
+conda activate dascore
+
+```
+
+#### Using Python virtual environments
+```
 # Create the virtual environment folder
 python -m venv ~/pyenv/dascore-env
 
